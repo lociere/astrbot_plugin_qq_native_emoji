@@ -117,6 +117,12 @@ class EmojiService:
         automatic: bool = True,
     ) -> dict:
         order = self.policy.order(automatic)
+        if automatic and self.policy.desire == 0:
+            return {
+                "entries": [],
+                "capabilities": self.status,
+                "policy": self.policy.public(automatic),
+            }
         if family != "all":
             self.policy.require(family, automatic)
         status = await self.refresh(action)

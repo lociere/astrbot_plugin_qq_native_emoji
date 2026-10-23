@@ -51,6 +51,30 @@ class ServiceTests(unittest.IsolatedAsyncioTestCase):
         )
         self.api = FakeNapCat()
 
+    async def test_zero_desire_auto_search_does_not_read_napcat(self):
+        self.service.settings["emoji_desire"] = 0
+        for family in ("all", "favorite", "face", "unicode", "market"):
+            result = await self.service.search(self.api, "", family, "a")
+            self.assertEqual(result["entries"], [])
+            self.assertEqual(result["policy"]["emoji_desire"], 0)
+        self.assertEqual(self.api.calls, [])
+        manual = await self.service.search(self.api, "", "face", "a", automatic=False)
+        self.assertTrue(manual["entries"])
+
+    async def test_zero_desire_rejects_automatic_send_before_text_or_api(self):
+        self.service.settings["emoji_desire"] = 0
+        with self.assertRaisesRegex(EmojiError, "倾向为0"):
+            await self.service.send(self.api, "face:14", "a", {"user_id": "100"}, "文字")
+        self.assertEqual(self.api.calls, [])
+        await self.service.send(self.api, "face:14", "a", {"user_id": "100"}, automatic=False)
+        self.assertEqual(sum(name.startswith("send_") for name, _ in self.api.calls), 1)
+
+    async def test_high_desire_does_not_bypass_existing_cooldown(self):
+        self.service.settings.update(emoji_desire=100, cooldown_seconds=10)
+        await self.service.send(self.api, "face:14", "a", {"user_id": "100"})
+        with self.assertRaisesRegex(EmojiError, "间隔"):
+            await self.service.send(self.api, "face:14", "a", {"user_id": "100"})
+
     async def test_refresh_uses_explicit_collection_limit(self):
         status = await self.service.refresh(self.api)
         self.assertEqual(status["resource_entries"], 2)

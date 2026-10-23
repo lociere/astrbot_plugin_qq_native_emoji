@@ -8,7 +8,7 @@ metadata.yaml           插件元数据
 _conf_schema.json       配置定义
 native_emoji/
   catalog.py            QQ 资源解析和目录存储
-  policy.py             类型开关、优先级和 Unicode 策略
+  policy.py             使用倾向、类型开关、优先级和 Unicode 策略
   service.py            NapCat 接口调用和消息发送
 tests/                  单元测试和 SDK 检查
 tools/export_qq_faces.py QQ 资源 JSON 导出工具

@@ -126,6 +126,37 @@ async def smoke():
         plugin.config["fallback_to_other_types"] = False
         await plugin.describe_incoming(event2, request)
         assert "首选类型没有合适候选时，只用文字回复" in request.system_prompt
+        # Usage preference still reaches the model when the optional tool tutorial is off.
+        plugin.config.update(emoji_desire=85, tool_guidance=False)
+        request = SimpleNamespace(system_prompt="original persona", prompt="original message")
+        await plugin.describe_incoming(event2, request)
+        assert request.system_prompt.startswith("original persona")
+        assert "85/100" in request.system_prompt
+        assert "这不是发送概率" in request.system_prompt
+        assert "发送工具已发送或可能已发送" not in request.system_prompt
+
+        # A cached service must honor zero immediately, before any platform API operation.
+        plugin.config.update(emoji_desire=0, enable_unicode=True, fallback_to_other_types=True)
+        zero = Event(api)
+        count_before = len(api.calls)
+        hidden = json.loads(await plugin.search_tool(zero, "", "all", 12))
+        assert hidden["entries"] == []
+        assert hidden["policy"]["emoji_desire"] == 0
+        refused = json.loads(await plugin.send_tool(zero, "face:14", "不应发送的文字"))
+        assert refused["status"] == "error_or_uncertain"
+        assert len(api.calls) == count_before
+        response = LLMResponse("assistant", "真的吗？😋……")
+        await plugin.filter_llm_unicode(zero, response)
+        assert response.completion_text == "真的吗？……"
+        request = SimpleNamespace(system_prompt="original persona", prompt="original message")
+        await plugin.describe_incoming(zero, request)
+        assert "0/100" in request.system_prompt and "只使用文字" in request.system_prompt
+
+        # Explicit manual sends remain permitted and retain the original message layout.
+        manual = Event(api)
+        sent = await plugin._send(manual, "face:14", automatic=False)
+        assert sent["status"] == "sent"
+        assert api.calls[-1][1]["message"] == [{"type": "face", "data": {"id": "14"}}]
         # SDK imports and handlers exercised in an isolated interpreter, not a running bot.
         await plugin.terminate()
     print(

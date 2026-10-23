@@ -2,7 +2,7 @@ name: astrbot_plugin_qq_native_emoji
 display_name: QQ 原生表情适配
 desc: 基于 NapCat 的 QQ 原生、商城及收藏表情目录搜索与原格式发送，提供 AI 工具和管理员指令。
 short_desc: 保留 face、mface 和收藏表情语义的 QQ 表情适配
-version: 0.1.0
+version: 0.2.0
 author: lociere
 repo: https://github.com/lociere/astrbot_plugin_qq_native_emoji
 support_platforms:
