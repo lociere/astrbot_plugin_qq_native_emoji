@@ -1,0 +1,17 @@
+{
+  "enabled": {"description": "启用插件", "type": "bool", "default": true},
+  "face_config_paths": {"description": "AstrBot 可读的 QQ face_config.json 路径", "type": "list", "default": [], "hint": "填写只读挂载路径或从 NapCat 导出的 QQ 原始 JSON；不是图片目录。留空时仍可读取收藏和学习收到的原生/商城表情"},
+  "enable_favorites": {"description": "允许使用 QQ 收藏表情", "type": "bool", "default": true, "hint": "关闭后不读取收藏、不展示收藏候选，也拒绝从旧缓存发送"},
+  "enable_faces": {"description": "允许使用 QQ 原生表情（face）", "type": "bool", "default": true},
+  "enable_market": {"description": "允许使用商城表情（mface）", "type": "bool", "default": true, "hint": "控制已学习商城表情的搜索与发送，不删除学习记录"},
+  "enable_unicode": {"description": "允许使用 Unicode emoji", "type": "bool", "default": true, "hint": "关闭后也过滤本插件随附文字和当前 QQ 会话普通非流式模型回复中的 Unicode emoji；不改写用户输入或其他插件主动发送"},
+  "family_priority": {"description": "表情类型优先级（从前到后）", "type": "list", "default": ["favorite", "market", "face", "unicode"], "hint": "favorite=收藏，market=商城，face=QQ原生，unicode=Unicode。关闭的类型会跳过；未填写的类型补在末尾"},
+  "fallback_to_other_types": {"description": "首选类型不合适时允许考虑其他类型", "type": "bool", "default": true, "hint": "开启：按优先级考虑其他已开启类型，也可以不发；关闭：AI仅考虑第一种已开启类型，没有合适候选就只用文字。明确的手动指令仍可使用其他已开启类型"},
+  "favorite_count": {"description": "一次请求的收藏数量", "type": "int", "default": 1000, "hint": "最大 2000；QQ 可能返回更少，状态会标注疑似截断，不能保证完整遍历收藏夹"},
+  "admin_only": {"description": "仅允许 AstrBot 管理员使用搜索和发送", "type": "bool", "default": false},
+  "allowed_sessions": {"description": "允许的 AstrBot 会话标识", "type": "list", "default": [], "hint": "留空允许当前 AstrBot 已启用的会话；填写完整 unified_msg_origin 可限制使用范围"},
+  "max_per_turn": {"description": "每轮最多尝试发送表情次数", "type": "int", "default": 1, "hint": "范围 1 到 3；超时也计入，避免重复消息"},
+  "cooldown_seconds": {"description": "同一会话表情发送最小间隔（秒）", "type": "float", "default": 2.0},
+  "tool_guidance": {"description": "加入简短的临时工具使用指引", "type": "bool", "default": true, "hint": "只作用于当前模型请求，不改写保存的人格提示词"},
+  "describe_incoming": {"description": "向模型说明本条消息的原生/商城表情元数据", "type": "bool", "default": true}
+}

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.pytest_cache/
+.coverage
+data/
+*.tmp
+.env
+face_config.json
+catalog*.json
